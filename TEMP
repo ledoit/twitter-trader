@@ -1,0 +1,74 @@
+import pymongo
+import json
+import prices
+
+class Mongo:
+    def __init__(self):
+        self.client = pymongo.MongoClient("mongodb+srv://user:user@cluster0.gn2iv.mongodb.net/twitter_trader?retryWrites=true&w=majority")
+        self.db = self.client.twitter_trader
+        self.portfolio = self.db.portfolio
+        self.profits = self.db.profits
+        # print(self.db.command("serverStatus"))
+
+    # returns portfolio from DB as dict
+    def getPortfolio(self):
+        cursor = self.portfolio.find()
+        return list(cursor)
+        
+    # takes in dict of new portfolio and returns tuple of what to buy and sell -- (to_buy, to_sell) tuple
+    def getTrades(self,new_portfolio):
+        old_portfolio = self.getPortfolio()
+        to_buy = []
+        to_sell = []
+        for co in old_portfolio:
+            if not co in new_portfolio:
+                to_sell.append(co)
+        for co in new_portfolio:
+            if not co in old_portfolio:
+                to_buy.append(co)
+        return (to_buy,to_sell)
+    # takes in dict of new portfolio and updates DB
+    def updatePortfolio(self,portfolio_lst):
+        self.portfolio.delete_many({})
+        lst = []
+        for co in portfolio_lst:
+            doc = {"company": co, "price": prices.get_price(co)}
+            lst.append(doc)
+        self.portfolio.insert_many(lst)
+
+    def getLatestProfit(self):
+        return self.profits.find().limit(1).sort([('$natural',-1)])
+    # takes in current profit, calculates new one, updates DB, and returns it
+
+    def updateProfit(self,net_profit):
+        last_entry = self.getLatestProfit().next()
+        last_time = last_entry['time']
+        last_profit = last_entry['profit']
+        self.profits.insert_one({'time':last_time+1, 'profit':0}) # need to change profit
+        return last_profit+net_profit
+
+    # calculates new profit and updates DB
+    # def calculateProfit(self, to_buy, to_sell, new_portfolio,current_prices):
+    #     old_portfolio = self.getPortfolio()
+    #     net_profit = 0
+    #     for co in to_buy:
+    #         net_profit -= current_prices[co]
+    #     for co in to_sell:
+    #         net_profit += current_prices[co]
+    #     self.updateProfit(net_profit)
+    #     return net_profit
+    # one time function to populate databases with starting values
+    def initDatabases(self,company_lst):
+        self.updatePortfolio(company_lst)
+        self.profits.delete_many({})
+        self.profits.insert_one({'time': 0, 'profit': 0})
+
+if __name__ == "__main__":
+    mongo = Mongo()
+    port = mongo.getPortfolio()
+    example_lst = ["apple","pear","potato","pineapple"]
+    print("Current port:\n", port)
+    mongo.updatePortfolio(example_lst)
+    print("\n\nNew port:", mongo.getPortfolio())
+
+    

@@ -11,7 +11,7 @@ class Mongo:
         self.balance = self.db.balance
         # print(self.db.command("serverStatus"))
 
-    # returns portfolio from DB as lst
+    # returns portfolio from DB as dict
     def getPortfolio(self):
         cursor = self.portfolio.find()
         return list(cursor)
@@ -32,11 +32,11 @@ class Mongo:
                 to_buy.append(co)
         return (to_buy,to_sell)
     # takes in dict of new portfolio and updates DB
-    def setPortfolio(self,new_portfolio):
+    def setPortfolio(self,portfolio_lst):
         self.portfolio.delete_many({})
         lst = []
-        for co in new_portfolio:
-            doc = {"company": co, "price": new_portfolio[co]}
+        for co in portfolio_lst:
+            doc = {"company": co, "price": co}
             lst.append(doc)
         self.portfolio.insert_many(lst)
 
@@ -45,7 +45,7 @@ class Mongo:
         last_entry = self.getLatestBalance().next()
         last_time = last_entry['time']
         last_balance = last_entry['balance']
-        self.balance.insert_one({'time': last_time + 1, 'balance': new_balance})
+        self.balance.insert_one({'time': last_time + 1, 'balance': 0})
         return last_balance + new_balance
 
     # gets latest balance from DB as float
@@ -61,15 +61,12 @@ class Mongo:
     
     def processBalance(self):
         old_portfolio = self.getPortofolio()
+        old_total = sum(old_portfolio.values())
         new_50 = get_new_50()
-        old_total = 0.0
         new_total = 0.0
-        for ticker in old_portfolio:
-            old_total += get_price(ticker)
         for ticker in new_50:
             new_total += get_price(ticker)
         latest_balance = self.getLatestBalance() - old_total + new_total
-        self.setNewBalance(latest_balance)
 
 
 if __name__ == "__main__":
@@ -77,7 +74,5 @@ if __name__ == "__main__":
     port = mongo.getPortfolio()
     example_lst = ["apple","pear","potato","pineapple"]
     print("Current port:\n", port)
-    new_50 = get_new_50()
-    mongo.setPortfolio(new_50)
+    mongo.setPortfolio(example_lst)
     print("\n\nNew port:", mongo.getPortfolio())
-    
