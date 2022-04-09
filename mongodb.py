@@ -47,9 +47,9 @@ class Mongo:
 if __name__ == "__main__":
     mongo = Mongo()
     port = mongo.getPortfolio()
-    example_dict = {"apple":100,"pear":200,"potato":50,"pineapple":99}
+    example_lst = ["apple","pear","potato","pineapple"]
     print("Current port:\n", port)
-    mongo.updatePortfolio(example_dict) 
+    mongo.updatePortfolio(example_lst)
     print("\n\nNew port:", mongo.getPortfolio())
 
     
