@@ -12,10 +12,10 @@ class TwitterClient(object):
 		Class constructor or initialization method.
 		'''
 		# keys and tokens from the Twitter Dev Console
-		consumer_key = 'XXXXXXXXXXXXXXXXXXXXXXXX'
-		consumer_secret = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-		access_token = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXX'
-		access_token_secret = 'XXXXXXXXXXXXXXXXXXXXXXXXX'
+		consumer_key = 'b5HGk1yrP7pgtWCsqTgRcEog1'
+		consumer_secret = 'gxkCznbQ6Vja5X94TTVklxb726AuUYvjcHGQZnatvv0T582b5p'
+		access_token = '766580899693535232-tZmLUdg2Y8J9nbbJOiSVH4cDvB3hiZY'
+		access_token_secret = 'uZlzifzY6lLnyyWcbS2pUV1E7qmmq8Li7cG8HvG3vY2tP'
 
 		# attempt authentication
 		try:
@@ -33,8 +33,7 @@ class TwitterClient(object):
 		Utility function to clean tweet text by removing links, special characters
 		using simple regex statements.
 		'''
-		return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])
-									|(\w+:\/\/\S+)", " ", tweet).split())
+		return ' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)", " ", tweet).split())
 
 	def get_tweet_sentiment(self, tweet):
 		'''
@@ -60,7 +59,7 @@ class TwitterClient(object):
 
 		try:
 			# call twitter api to fetch tweets
-			fetched_tweets = self.api.search(q = query, count = count)
+			fetched_tweets = self.api.search_tweets(q = query, count = count)
 
 			# parsing tweets one by one
 			for tweet in fetched_tweets:
@@ -91,7 +90,7 @@ def main():
 	# creating object of TwitterClient Class
 	api = TwitterClient()
 	# calling function to get tweets
-	tweets = api.get_tweets(query = 'Donald Trump', count = 200)
+	tweets = api.get_tweets(query = 'Joe Biden', count = 200)
 
 	# picking positive tweets from tweets
 	ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive']
