@@ -123,6 +123,7 @@ def get_ratings(ticker):
 # for tweet in ntweets[:10]:
 # 	print(tweet['text'])
 
+# returns list of new top 50 companies by positivity score
 def get_new_50():
     dic = {}
     with open('constituents.txt', mode='r') as csv_file:
@@ -141,6 +142,7 @@ def get_new_50():
     return [k for k, v in sorted(dic.items(), key=lambda item: item[1], reverse=True)[:5]]
 
 
+# returns list that contains the list of companies to hold, sell, and buy respectively
 def compare(old_50, new_50):
     hold = sell = buy = []
     for ticker in old_50:
