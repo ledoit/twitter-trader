@@ -9,14 +9,10 @@ class Mongo:
         self.profits = self.db.profits
         # print(self.db.command("serverStatus"))
 
-    # returns portfolio from DB as dict
+    # returns portfolio from DB as lst
     def getPortfolio(self):
         cursor = self.portfolio.find()
-        lst = list(cursor)
-        dict = {}
-        for entry in lst:
-            dict[entry['company']] = entry['price']
-        return dict
+        return list(cursor)
         
     # takes in dict of new portfolio and returns JSON
     def JSONifyPortfolio(self,portfolio_dict):
