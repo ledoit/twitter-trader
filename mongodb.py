@@ -1,12 +1,14 @@
 import pymongo
 import json
+from twitter import get_new_50
+from prices import get_price
 
 class Mongo:
     def __init__(self):
         self.client = pymongo.MongoClient("mongodb+srv://user:user@cluster0.gn2iv.mongodb.net/twitter_trader?retryWrites=true&w=majority")
         self.db = self.client.twitter_trader
         self.portfolio = self.db.portfolio
-        self.profits = self.db.profits
+        self.balance = self.db.balance
         # print(self.db.command("serverStatus"))
 
     # returns portfolio from DB as lst
@@ -30,7 +32,7 @@ class Mongo:
                 to_buy.append(co)
         return (to_buy,to_sell)
     # takes in dict of new portfolio and updates DB
-    def updatePortfolio(self,portfolio_lst):
+    def setPortfolio(self,portfolio_lst):
         self.portfolio.delete_many({})
         lst = []
         for co in portfolio_lst:
@@ -38,10 +40,17 @@ class Mongo:
             lst.append(doc)
         self.portfolio.insert_many(lst)
 
-    # takes in current profit and adds to DB
-    def updateProfits(self,net_profit):
-        pass
+    # sets balance in DB as float
+    def setBalance(self,new_balance):  # not sponsored
+        last_entry = self.getLatestProfit().next()
+        last_time = last_entry['time']
+        last_profit = last_entry['profit']
+        self.profits.insert_one({'time': last_time + 1, 'profit': 0})
+        return last_profit + new_balance
 
+    # returns portfolio from DB as lst
+    def getBalance(self):
+        return self.balance.find()
 
 
 if __name__ == "__main__":
@@ -49,7 +58,7 @@ if __name__ == "__main__":
     port = mongo.getPortfolio()
     example_lst = ["apple","pear","potato","pineapple"]
     print("Current port:\n", port)
-    mongo.updatePortfolio(example_lst)
+    mongo.setPortfolio(example_lst)
     print("\n\nNew port:", mongo.getPortfolio())
 
     
