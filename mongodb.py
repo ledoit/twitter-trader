@@ -34,11 +34,11 @@ class Mongo:
                 to_buy.append(co)
         return (to_buy,to_sell)
     # takes in dict of new portfolio and updates DB
-    def updatePortfolio(self,portfolio_dict):
+    def updatePortfolio(self,portfolio_lst):
         self.portfolio.delete_many({})
         lst = []
-        for co in portfolio_dict:
-            doc = {"company": co, "price": portfolio_dict[co]}
+        for co in portfolio_lst:
+            doc = {"company": co, "price": co}
             lst.append(doc)
         self.portfolio.insert_many(lst)
 

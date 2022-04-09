@@ -101,7 +101,7 @@ def get_ratings(ticker):
     # picking positive tweets from tweets
     ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive']
     # percentage of positive tweets
-    print("Positive tweets for {} percentage: {} %".format(ticker, round(100 * len(ptweets) / len(tweets))))
+    print("Positive tweets for {}: {} %".format(ticker, round(100 * len(ptweets) / len(tweets))))
     return round(100 * len(ptweets) / len(tweets))
 
 
@@ -123,7 +123,7 @@ def get_ratings(ticker):
 # for tweet in ntweets[:10]:
 # 	print(tweet['text'])
 
-def loop():
+def get_new_50():
     dic = {}
     with open('constituents.txt', mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
@@ -137,11 +137,26 @@ def loop():
             else:
                 break
 
-    return sorted(dic.items(), key=lambda x: x[1], reverse=True)[:5]  # change the 5 to 50 to see top 50
+    # change the 5 to 50 to see top 50
+    return [k for k, v in sorted(dic.items(), key=lambda item: item[1], reverse=True)[:5]]
+
+
+def compare(old_50, new_50):
+    hold = sell = buy = []
+    for ticker in old_50:
+        if ticker in new_50:
+            hold += ticker
+        else:
+            sell += ticker
+    for ticker in new_50:
+        if ticker not in hold:
+            buy += ticker
+    return [hold, sell, buy]
 
 
 def main():
-    print(loop())
+    new_50 = get_new_50()
+    print(new_50)
 
 
 if __name__ == "__main__":
