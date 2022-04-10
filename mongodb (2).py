@@ -2,7 +2,7 @@ import pymongo
 import json
 from datetime import datetime as dt, timedelta as td
 from twitter import get_new_50, compare
-from prices import get_price,get_price_dict
+from prices import get_price
 
 
 class Mongo:
@@ -12,7 +12,7 @@ class Mongo:
         self.db = self.client.twitter_trader
         self.portfolio = self.db.portfolio
         self.balance = self.db.balance
-
+@@ -15,69 +18,89 @@ def __init__(self):
     def getPortfolio(self):
         cursor = self.portfolio.find()
         return list(cursor)
@@ -20,8 +20,8 @@ class Mongo:
     # takes in lst of new portfolio and updates DB
     def setPortfolio(self, new_portfolio):
         # storing a lst:
-        self.portfolio.delete_many({})
-        self.portfolio.insert_one(get_price_dict(new_portfolio))
+        self.portfolio.delete_many([])
+        self.portfolio.insert_one(new_portfolio)
 
         # # storing a dict:
         # self.portfolio.delete_many({})
@@ -65,30 +65,21 @@ class Mongo:
     #             to_buy.append(co)
     #     return (to_buy,to_sell)
 
-    def initDatabases(self, dict):
-        self.setPortfolio(dict)
+    def initDatabases(self, lst):
+        self.setPortfolio(lst)
         self.balance.delete_many({})
         self.balance.insert_one({'time': 0, 'stock': 0, 'cash': 0})
 
     def processBalance(self):
         old_50 = self.getPortfolio()
-        if not old_50:
-            new_50 = get_new_50()
-            [hold, sell, buy] = compare(old_50, new_50)
-            cash_out = self.evalPortfolio(buy)
-            latest_cash = self.getLatestBalance()['cash'] - cash_out
-            latest_stock = self.evalPortfolio(hold) + cash_out
-            self.setNewBalance(latest_stock, latest_cash)
-            self.setPortfolio(hold + buy)
-        else:
-            new_50 = get_new_50()
-            [hold, sell, buy] = compare(old_50, new_50)
-            cash_in = self.evalPortfolio(sell)
-            cash_out = self.evalPortfolio(buy)
-            latest_cash = self.getLatestBalance()['cash'] + cash_in - cash_out
-            latest_stock = self.evalPortfolio(hold) + cash_out
-            self.setNewBalance(latest_stock, latest_cash)
-            self.setPortfolio(hold + buy)
+        new_50 = get_new_50()
+        [hold, sell, buy] = compare(old_50, new_50)
+        cash_in = self.evalPortfolio(sell)
+        cash_out = self.evalPortfolio(buy)
+        latest_cash = self.getLatestBalance()['cash'] + cash_in - cash_out
+        latest_stock = self.evalPortfolio(hold) + cash_out
+        self.setNewBalance(latest_stock, latest_cash)
+        self.setPortfolio(hold + buy)
 
 
 if __name__ == "__main__":
