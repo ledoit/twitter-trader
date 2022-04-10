@@ -42,13 +42,13 @@ class Mongo:
 
     # gets latest balance from DB as float
     def getLatestBalance(self):
-        return self.balance.find().limit(1).sort([('$natural', -1)])
+        return self.balance.find().limit(1).sort([('$natural', -1)]).next()
 
     # sets new balance in DB as float
     def setNewBalance(self, new_stock, new_cash):
         last_entry = self.getLatestBalance().next()
         last_time = last_entry['time']
-        self.balance.insert_one({'time': last_time + 1, 'balance': new_stock, 'cash': new_cash})
+        self.balance.insert_one({'time': last_time + 1, 'stock': new_stock, 'cash': new_cash})
 
     # # takes in dict of new portfolio and returns JSON
     # def JSONifyPortfolio(self,portfolio_dict):
