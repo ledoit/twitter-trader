@@ -16,3 +16,9 @@ def get_prices(ticker_lst):
         prices.append(get_price(ticker))
     return prices
 
+def get_price_dict(ticker_lst):
+    price_dict = {}
+    for ticker in ticker_lst:
+        print("ticker: ", ticker)
+        price_dict[ticker] = get_price(ticker)
+    return price_dict
