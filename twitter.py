@@ -101,7 +101,7 @@ def get_ratings(ticker):
     # picking positive tweets from tweets
     ptweets = [tweet for tweet in tweets if tweet['sentiment'] == 'positive']
     # percentage of positive tweets
-    print("Positive tweets for {}: {} %".format(ticker, round(100 * len(ptweets) / len(tweets))))
+    # print("Positive tweets for {}: {} %".format(ticker, round(100 * len(ptweets) / len(tweets))))
     return round(100 * len(ptweets) / len(tweets))
 
 
@@ -158,7 +158,7 @@ def compare(old_50, new_50):
 
 def main():
     new_50 = get_new_50()
-    print(new_50)
+    # print(new_50)
 
 
 if __name__ == "__main__":
