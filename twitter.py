@@ -4,7 +4,6 @@ import csv
 import tweepy
 from textblob import TextBlob
 from tweepy import OAuthHandler
-from prices import get_price
 
 
 def clean_tweet(tweet):
@@ -141,31 +140,3 @@ def get_new_50():
 
     # change the 5 to 50 to see top 50
     return [k for k, v in sorted(dic.items(), key=lambda item: item[1], reverse=True)[:10]]
-
-
-# returns list that contains the list of companies to hold, sell, and buy respectively
-def compare(old_50, new_50):
-    hold, sell, buy = [], [], []
-    for ticker in old_50:
-        if ticker in new_50:
-            hold.append(ticker)
-        else:
-            sell.append(ticker)
-    for ticker in new_50:
-        if ticker not in hold:
-            buy.append(ticker)
-    return [hold, sell, buy]
-
-
-def main():
-    new_50 = get_new_50()
-    total = 0.0
-    for ticker in new_50:
-        total += get_price(ticker)
-    print(total)
-    # print(new_50)
-
-
-if __name__ == "__main__":
-    # calling main function
-    main()
