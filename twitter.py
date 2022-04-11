@@ -132,11 +132,11 @@ def get_new_50():
         for row in csv_reader:
             dic[row["Symbol"]] = get_ratings(row["Symbol"])
 
-            # remove this if testing with all 500
+            # comment this out for full scale testing
             if rowcount < 20:
                 rowcount += 1
             else:
                 break
 
-    # change the 5 to 50 to see top 50
+    # change list comprehension to [:50] for full scale testing
     return [k for k, v in sorted(dic.items(), key=lambda item: item[1], reverse=True)[:10]]

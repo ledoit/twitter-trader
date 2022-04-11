@@ -36,13 +36,14 @@ def process_balance(p, c):
     return hold + buy, s, c
 
 
-if __name__ == "__main__":
+def loop():
 
     # first call to process_balance
     time_period, logs = 0, []
     portfolio, stock, cash = process_balance([], 0.0)
     logs.append([time_period, stock + cash])
     print(f"time period: {logs[-1][0]}, net balance is: {logs[-1][1]}")
+    print(f"logs: {logs}")
     start_time = dt.now()
 
     # infinite loop for fetching positivity ratings & prices, and updating the DB
@@ -54,3 +55,4 @@ if __name__ == "__main__":
         time_period += 1
         logs.append([time_period, stock + cash])
         print(f"time period: {logs[-1][0]}, net balance is: {logs[-1][1]}")
+        print(f"logs: {logs}")
