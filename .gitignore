@@ -3,3 +3,4 @@ mongodb copy 2.py
 .vscode/settings.json
 __pycache__/prices.cpython-39.pyc
 __pycache__/twitter.cpython-39.pyc
+mongodb copy 3.py
