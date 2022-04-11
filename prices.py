@@ -10,11 +10,13 @@ def get_price(ticker):
 # test code
 get_price('TSLA')
 
+
 def get_prices(ticker_lst):
     prices = []
     for ticker in ticker_lst:
         prices.append(get_price(ticker))
     return prices
+
 
 def get_price_dict(ticker_lst):
     price_dict = {}
